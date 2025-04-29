@@ -1,0 +1,20 @@
+[21:13:55] [main/INFO] [GradleStart]: userProperties: {}
+[21:13:55] [main/INFO] [GradleStart]: assetsDir: /home/coffeemeow/.gradle/caches/retro_futura_gradle/assets
+[21:13:55] [main/INFO] [GradleStart]: assetIndex: 1.7.10
+[21:13:55] [main/INFO] [GradleStart]: accessToken: 0
+[21:13:55] [main/INFO] [GradleStart]: version: 1.7.10
+[21:13:55] [main/INFO] [GradleStart]: username: Developer
+[21:13:55] [main/INFO] [GradleStart]: Extra: [--gameDir, /home/coffeemeow/Repo/Psychedelicraft/run, --uuid, 31c4910d-9b69-4725-8969-9ed53ac8a7dc]
+[21:13:55] [main/INFO] [GradleStart]: Found and added coremod: codechicken.nei.asm.NEICorePlugin
+[21:13:55] [main/INFO] [GradleStart]: Found and added coremod: codechicken.core.launch.CodeChickenCorePlugin
+[21:13:55] [main/INFO] [GradleStart]: Running with arguments: [--userProperties, {}, --assetsDir, /home/coffeemeow/.gradle/caches/retro_futura_gradle/assets, --assetIndex, 1.7.10, --accessToken, {REDACTED}, --version, 1.7.10, --username, Developer, --tweakClass, cpw.mods.fml.common.launcher.FMLTweaker, --gameDir, /home/coffeemeow/Repo/Psychedelicraft/run, --uuid, 31c4910d-9b69-4725-8969-9ed53ac8a7dc, --tweakClass, net.minecraftforge.gradle.tweakers.CoremodTweaker]
+[21:52:43] [main/INFO] [GradleStart]: userProperties: {}
+[21:52:43] [main/INFO] [GradleStart]: assetsDir: /home/coffeemeow/.gradle/caches/retro_futura_gradle/assets
+[21:52:43] [main/INFO] [GradleStart]: assetIndex: 1.7.10
+[21:52:43] [main/INFO] [GradleStart]: accessToken: 0
+[21:52:43] [main/INFO] [GradleStart]: version: 1.7.10
+[21:52:43] [main/INFO] [GradleStart]: username: Developer
+[21:52:43] [main/INFO] [GradleStart]: Extra: [--gameDir, /home/coffeemeow/Repo/Psychedelicraft/run, --uuid, 31c4910d-9b69-4725-8969-9ed53ac8a7dc]
+[21:52:43] [main/INFO] [GradleStart]: Found and added coremod: codechicken.nei.asm.NEICorePlugin
+[21:52:43] [main/INFO] [GradleStart]: Found and added coremod: codechicken.core.launch.CodeChickenCorePlugin
+[21:52:43] [main/INFO] [GradleStart]: Running with arguments: [--userProperties, {}, --assetsDir, /home/coffeemeow/.gradle/caches/retro_futura_gradle/assets, --assetIndex, 1.7.10, --accessToken, {REDACTED}, --version, 1.7.10, --username, Developer, --tweakClass, cpw.mods.fml.common.launcher.FMLTweaker, --gameDir, /home/coffeemeow/Repo/Psychedelicraft/run, --uuid, 31c4910d-9b69-4725-8969-9ed53ac8a7dc, --tweakClass, net.minecraftforge.gradle.tweakers.CoremodTweaker]

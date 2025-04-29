@@ -1,69 +1,140 @@
+/*
+ *  Copyright (c) 2014, Lukas Tenbrink.
+ *  * http://lukas.axxim.net
+ */
+
 package ivorius.psychedelicraft.config;
 
-import java.nio.file.Path;
+import ivorius.psychedelicraft.Psychedelicraft;
+import ivorius.psychedelicraft.entities.PSEntityList;
+import ivorius.psychedelicraft.fluids.FluidAlcohol;
+import net.minecraftforge.common.config.Configuration;
 
-import com.google.gson.GsonBuilder;
-import com.minelittlepony.common.util.settings.Config;
-import com.minelittlepony.common.util.settings.HeirarchicalJsonConfigAdapter;
-import com.minelittlepony.common.util.settings.Setting;
+import java.util.HashMap;
+import java.util.Map;
 
-import ivorius.psychedelicraft.fluid.alcohol.TickRate;
-import ivorius.psychedelicraft.util.CodecTypeAdapter;
-import net.minecraft.item.ItemGroups;
+import static ivorius.psychedelicraft.Psychedelicraft.config;
 
-public class PSConfig extends Config {
-    public static final int MINUTE = 20 * 60;
+/**
+ * Created by lukas on 31.07.14.
+ */
+public class PSConfig
+{
+    public static final String CATEGORY_BALANCING = "balancing";
+    public static final String CATEGORY_VISUAL = "visual";
+    public static final String CATEGORY_AUDIO = "audio";
 
-    public final Setting<Integer> randomTicksUntilRiftSpawn = value("balancing", "randomTicksUntilRiftSpawn", MINUTE * 180)
-            .addComment("Controls how frequently zero rifts spawn.")
-            .addComment("Set to 0 to disable rift spawning entirely")
-            .addComment("Default: " + (MINUTE * 180));
-    public final Setting<Integer> dryingTableTickDuration = value("balancing", "dryingTableTickDuration", MINUTE * 16)
-            .addComment("Sets the number of ticks the wooden drying table takes on average to cook items")
-            .addComment("Default: " + (MINUTE * 16));
-    public final Setting<Integer> ironDryingTableTickDuration = value("balancing", "ironDryingTableTickDuration", MINUTE * 12)
-            .addComment("Sets the number of ticks the stone drying table takes on average to cook items")
-            .addComment("Default: " + (MINUTE * 12));
-    public final Setting<Integer> slurryHardeningTime = value("balancing", "slurryHardeningTime", MINUTE * 30)
-            .addComment("Sets the number of ticks it takes for slurry to congeal into dirt")
-            .addComment("Default: " + (MINUTE * 30));
-    public final Setting<Boolean> enableHarmonium = value("balancing", "enableHarmonium", true)
-            .addComment("Sets whether harmonium is obtainable")
-            .addComment("Default: true");
-    public final Setting<Boolean> enableRiftJars = value("balancing", "enableRiftJars", true)
-            .addComment("Sets whether rift jars are obtainable. Rift jars are only useful if rift spawning is enabled as well.")
-            .addComment("Default: true");
-    public final Setting<Boolean> disableMolotovs = value("balancing", "disableMolotovs", false)
-            .addComment("Sets whether molotov cocktails are (not) obtainable.")
-            .addComment("Default: false");
+    private static final int MINUTE = 20 * 60;
 
-    public final Setting<Generation> worldGeneration = value("balancing", "worldGeneration", new Generation(
-            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
-            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
-            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
-            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
-            FeatureCustomConfig.DEFAULT, FeatureCustomConfig.DEFAULT,
-            FeatureCustomConfig.DEFAULT,
-            true, true, true
-    )).addComment("Settings affecting world generation and in-game mechanics");
-    public final Setting<TickRates> fluidAttributes = value("balancing", "fluidAttributes", new TickRates(TickRate.getDefaults()))
-            .addComment("Sets the rate at which each fluid is processed.")
-            .addComment("Delete the entry for a fluid and restart the game to have the default value for that fluid populated.");
-    public final Setting<MessageDistortion> messageDistortion = value("balancing", "messageDistortion", MessageDistortion.BOTH)
-            .addComment("Sets whether drug effects are able to mess with chat messages.")
-            .addComment("Default: BOTH")
-            .addComment("OUTGOING - Messages others see from you are affected")
-            .addComment("INCOMING - Messages you see from others are affected")
-            .addComment("BOTH - All messages are affected")
-            .addComment("NONE - No messages are affected");
+    public static int randomTicksUntilRiftSpawn;
+    public static boolean enableHarmonium;
+    public static boolean enableRiftJars;
 
-    public PSConfig(Path path) {
-        super(new HeirarchicalJsonConfigAdapter(new GsonBuilder()
-                .registerTypeAdapter(FeatureCustomConfig.InclusionFilter.class, new CodecTypeAdapter<>(FeatureCustomConfig.InclusionFilter.CODEC))
-                .registerTypeAdapter(TickRates.class, new CodecTypeAdapter<>(TickRates.CODEC))
-        ), path);
-        enableHarmonium.onChanged(v -> ItemGroups.displayContext = null);
-        enableRiftJars.onChanged(v -> ItemGroups.displayContext = null);
-        disableMolotovs.onChanged(v -> ItemGroups.displayContext = null);
+    public static boolean genJuniper;
+    public static boolean genCannabis;
+    public static boolean genHop;
+    public static boolean genTobacco;
+    public static boolean genCoffea;
+    public static boolean genCoca;
+    public static boolean genPeyote;
+
+    public static boolean dungeonChests;
+    public static boolean villageChests;
+
+    public static boolean farmerDrugDeals;
+
+    public static int dryingTableTickDuration;
+    public static int ironDryingTableTickDuration;
+
+    public static final Map<String, Boolean> drugBGM = new HashMap<>();
+
+    public static final FluidAlcohol.TickInfo alcInfoWheatHop = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoWheat = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoCorn = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoPotato = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoRedGrapes = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoRice = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoJuniper = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoSugarCane = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoHoney = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoApple = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoPineapple = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoBanana = new FluidAlcohol.TickInfo();
+    public static final FluidAlcohol.TickInfo alcInfoMilk = new FluidAlcohol.TickInfo();
+
+    public static int slurryHardeningTime;
+
+    public static boolean distortIncomingMessages;
+    public static boolean distortOutgoingMessages;
+
+    public static void loadConfig(String configID)
+    {
+        if (configID == null || configID.equals(Configuration.CATEGORY_GENERAL))
+        {
+            PSEntityList.villagerDealerProfessionID = config.get("General", "villagerDealerProfessionID", 87, "Internal ID for the drug dealer villager. Enter a negative number to disable.").getInt();
+        }
+
+        if (configID == null || configID.equals(CATEGORY_BALANCING))
+        {
+            randomTicksUntilRiftSpawn = config.get(CATEGORY_BALANCING, "randomTicksUntilRiftSpawn", MINUTE * 180, "Approximate number of ticks until a rift spawns. Enter a negative number to disable.").getInt();
+
+            enableHarmonium = config.get(CATEGORY_BALANCING, "enableHarmonium", false).getBoolean();
+            enableRiftJars = config.get(CATEGORY_BALANCING, "enableRiftJars", false).getBoolean();
+
+            genJuniper = config.get(CATEGORY_BALANCING, "generateJuniper", true).getBoolean();
+            genCannabis = config.get(CATEGORY_BALANCING, "generateCannabis", true).getBoolean();
+            genHop = config.get(CATEGORY_BALANCING, "genHop", true).getBoolean();
+            genTobacco = config.get(CATEGORY_BALANCING, "generateTobacco", true).getBoolean();
+            genCoffea = config.get(CATEGORY_BALANCING, "generateCoffea", true).getBoolean();
+            genCoca = config.get(CATEGORY_BALANCING, "generateCoca", true).getBoolean();
+            genPeyote = config.get(CATEGORY_BALANCING, "generatePeyote", true).getBoolean();
+
+            dungeonChests = config.get(CATEGORY_BALANCING, "dungeonChests", true).getBoolean();
+            villageChests = config.get(CATEGORY_BALANCING, "villageChests", true).getBoolean();
+
+            farmerDrugDeals = config.get(CATEGORY_BALANCING, "farmerDrugDeals", true).getBoolean();
+
+            dryingTableTickDuration = config.get(CATEGORY_BALANCING, "dryingTableTickDuration", MINUTE * 16, "Time until plants in the drying table finish the drying process.").getInt();
+            ironDryingTableTickDuration = config.get(CATEGORY_BALANCING, "ironDryingTableTickDuration", MINUTE * 12, "Time until plants in the iron drying table finish the drying process.").getInt();
+
+            readTickInfo(alcInfoWheatHop, "wheatHop", MINUTE * 30, MINUTE * 60, MINUTE * 100, MINUTE * 30, config);
+            readTickInfo(alcInfoWheat, "wheat", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoCorn, "corn", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoPotato, "potato", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoRedGrapes, "redGrapes", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoRice, "rice", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoJuniper, "juniper", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoSugarCane, "sugarCane", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoHoney, "honey", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoApple, "apple", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoPineapple, "pineapple", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoBanana, "banana", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+            readTickInfo(alcInfoMilk, "milk", MINUTE * 40, MINUTE * 40, MINUTE * 30, MINUTE * 30, config);
+
+            slurryHardeningTime = config.get(CATEGORY_BALANCING, "slurryHardeningTime", MINUTE * 30, "The amount of ticks slurry needs to sit in a vat to harden to dirt.").getInt();
+
+            distortOutgoingMessages = config.getBoolean("distortOutgoingMessages", CATEGORY_BALANCING, true, "Whether the mod should distort chat messages when drugs have been consumed ('slurred speech').");
+        }
+
+        Psychedelicraft.proxy.loadConfig(configID);
+    }
+
+    public static void readTickInfo(FluidAlcohol.TickInfo tickInfo, String fluidName, int defaultFermentation, int defaultDistillation, int defaultMaturation, int defaultAcetification, Configuration config)
+    {
+        tickInfo.ticksPerFermentation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerFermentation", defaultFermentation, String.format("Time until %s wort ferments to the next step.", fluidName)).getInt();
+        tickInfo.ticksPerDistillation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerDistillation", defaultDistillation, String.format("Time until %s distills to the next step.", fluidName)).getInt();
+        tickInfo.ticksPerMaturation = config.get(CATEGORY_BALANCING, fluidName + "_ticksPerMaturation", defaultMaturation, String.format("Time until %s matures to the next step.", fluidName)).getInt();
+        tickInfo.ticksUntilAcetification = config.get(CATEGORY_BALANCING, fluidName + "_ticksUntilAcetification", defaultAcetification, String.format("Time until %s acetifies to form vinegar. Enter -1 to disable.", fluidName)).getInt();
+    }
+
+    public static void readHasBGM(String drugName, Configuration config)
+    {
+        drugBGM.put(drugName, config.get(CATEGORY_AUDIO, "bgm_" + drugName, false, "Indicates if the drug is supposed to have background music when active (refer to the wiki for instructions).").getBoolean());
+    }
+
+    public static boolean hasBGM(String drugName)
+    {
+        Boolean bool = drugBGM.get(drugName);
+        return bool != null && bool;
     }
 }

@@ -5,103 +5,169 @@
 
 package ivorius.psychedelicraft;
 
-import ivorius.psychedelicraft.advancement.PSCriteria;
-import ivorius.psychedelicraft.block.PSBlocks;
-import ivorius.psychedelicraft.block.entity.PSBlockEntities;
-import ivorius.psychedelicraft.command.*;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.relauncher.Side;
+import ivorius.ivtoolkit.network.PacketExtendedEntityPropertiesData;
+import ivorius.ivtoolkit.network.PacketExtendedEntityPropertiesDataHandler;
+import ivorius.ivtoolkit.network.PacketTileEntityData;
+import ivorius.ivtoolkit.network.PacketTileEntityDataHandler;
+import ivorius.psychedelicraft.achievements.PSAchievementList;
+import ivorius.psychedelicraft.commands.CommandDrug;
+import ivorius.psychedelicraft.commands.CommandPsyche;
 import ivorius.psychedelicraft.config.PSConfig;
-import ivorius.psychedelicraft.entity.PSEntities;
-import ivorius.psychedelicraft.entity.drug.DrugProperties;
-import ivorius.psychedelicraft.entity.effect.PSEffects;
-import ivorius.psychedelicraft.fluid.PSFluids;
-import ivorius.psychedelicraft.fluid.container.VariantMarshal;
-import ivorius.psychedelicraft.item.PSItemGroups;
-import ivorius.psychedelicraft.item.PSItems;
-import ivorius.psychedelicraft.network.Channel;
-import ivorius.psychedelicraft.particle.PSParticles;
-import ivorius.psychedelicraft.recipe.PSRecipes;
-import ivorius.psychedelicraft.screen.PSScreenHandlers;
-import ivorius.psychedelicraft.world.gen.PSWorldGen;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.HitResult;
-
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.apache.logging.log4j.LogManager;
+import ivorius.psychedelicraft.crafting.PSCrafting;
+import ivorius.psychedelicraft.entities.drugs.DrugInfluence;
+import ivorius.psychedelicraft.entities.drugs.DrugInfluenceHarmonium;
+import ivorius.psychedelicraft.entities.drugs.DrugRegistry;
+import ivorius.psychedelicraft.events.*;
+import ivorius.psychedelicraft.gui.CreativeTabPsyche;
+import ivorius.psychedelicraft.gui.PSGuiHandler;
+import ivorius.psychedelicraft.items.PSItems;
+import ivorius.psychedelicraft.worldgen.PSWorldGen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.EnumHelper;
 import org.apache.logging.log4j.Logger;
 
-import com.google.common.base.Suppliers;
+@Mod(modid = Psychedelicraft.MODID, version = Psychedelicraft.VERSION, name = Psychedelicraft.NAME,
+        guiFactory = "ivorius.psychedelicraft.gui.PSConfigGuiFactory")
+public class Psychedelicraft
+{
+    public static final String MODID = "psychedelicraft";
+    public static final String NAME = "Psychedelicraft";
+    public static final String VERSION = "1.5.2";
 
-public class Psychedelicraft implements ModInitializer {
-    public static final Logger LOGGER = LogManager.getLogger();
-    public static final String DEFAULT_NAMESPACE = "psychedelicraft";
-    public static final String VANILLA_EXTENSIONS_NAMESPACE = DEFAULT_NAMESPACE + "mc";
+    @Instance(value = "psychedelicraft")
+    public static Psychedelicraft instance;
 
-    public static Supplier<Optional<DrugProperties>> globalDrugProperties = Optional::empty;
-    public static Supplier<Optional<HitResult>> crossHairTarget = Optional::empty;
-    public static Runnable configChangeCallback = () -> {};
+    @SidedProxy(clientSide = "ivorius.psychedelicraft.client.ClientProxy", serverSide = "ivorius.psychedelicraft.server.ServerProxy")
+    public static PSProxy proxy;
 
-    private static final Supplier<PSConfig> CONFIG = Suppliers.memoize(() -> {
-        var config = new PSConfig(FabricLoader.getInstance().getConfigDir().resolve(DEFAULT_NAMESPACE + ".json"));
-        try {
-            config.load();
-            config.onChangedExternally(cf -> configChangeCallback.run());
-        } catch (Throwable t) {}
-        return config;
-    });
+    public static Logger logger;
+    public static Configuration config;
 
-    public static Optional<DrugProperties> getGlobalDrugProperties() {
-        return globalDrugProperties.get();
+    public static PSGuiHandler guiHandler;
+    public static PSEventForgeHandler eventForgeHandler;
+    public static PSEventFMLHandler eventFMLHandler;
+    public static PSCommunicationHandler communicationHandler;
+
+    public static SimpleNetworkWrapper network;
+
+    public static PSCoreHandlerClient coreHandlerClient;
+    public static PSCoreHandlerCommon coreHandlerCommon;
+    public static PSCoreHandlerServer coreHandlerServer;
+
+    public static CreativeTabPsyche creativeTab;
+    public static CreativeTabPsyche drinksTab;
+    public static CreativeTabPsyche weaponsTab;
+
+    public static String filePathTextures = "textures/mod/";
+    public static String filePathModels = "models/";
+    public static String filePathOther = "other/";
+    public static String filePathShaders = "shaders/";
+    public static String modBase = "psychedelicraft:";
+
+    public static EntityPlayer.EnumStatus sleepStatusDrugs;
+    public static DamageSource alcoholPoisoning;
+    public static DamageSource respiratoryFailure;
+    public static DamageSource stroke;
+    public static DamageSource heartFailure;
+
+    public static int blockWineGrapeLatticeRenderType;
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event)
+    {
+        logger = event.getModLog();
+
+        config = new Configuration(event.getSuggestedConfigurationFile());
+        config.load();
+        PSConfig.loadConfig(null);
+        if (config.hasChanged())
+            config.save();
+
+        creativeTab = new CreativeTabPsyche("psychedelicraft");
+        drinksTab = new CreativeTabPsyche("psycheDrinks");
+        weaponsTab = new CreativeTabPsyche("psycheWeapons");
+
+        guiHandler = new PSGuiHandler();
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, guiHandler);
+
+        eventForgeHandler = new PSEventForgeHandler();
+        eventForgeHandler.register();
+        eventFMLHandler = new PSEventFMLHandler();
+        eventFMLHandler.register();
+
+        communicationHandler = new PSCommunicationHandler(logger, MODID, this);
+
+        coreHandlerCommon = new PSCoreHandlerCommon();
+        coreHandlerCommon.register();
+
+        sleepStatusDrugs = EnumHelper.addStatus("onDrugs");
+        alcoholPoisoning = new DamageSource("alcoholPoisoning").setDamageBypassesArmor().setDamageIsAbsolute();
+        respiratoryFailure = new DamageSource("respiratoryFailure").setDamageBypassesArmor().setDamageIsAbsolute();
+        stroke = new DamageSource("stroke").setDamageBypassesArmor().setDamageIsAbsolute();
+        heartFailure = new DamageSource("heartFailure").setDamageBypassesArmor().setDamageIsAbsolute();
+
+        PSRegistryHandler.preInit(event, this);
+
+        proxy.preInit();
     }
 
-    public static Optional<HitResult> getCrossHairTarget() {
-        return crossHairTarget.get();
+    @EventHandler
+    public void load(FMLInitializationEvent event)
+    {
+        network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+        network.registerMessage(PacketExtendedEntityPropertiesDataHandler.class, PacketExtendedEntityPropertiesData.class, 0, Side.CLIENT);
+        network.registerMessage(PacketTileEntityDataHandler.class, PacketTileEntityData.class, 1, Side.CLIENT);
+
+        proxy.registerRenderers();
+
+        creativeTab.tabIcon = PSItems.cannabisLeaf;
+        drinksTab.tabIcon = PSItems.itemBarrel;
+        weaponsTab.tabIcon = PSItems.molotovCocktail;
+
+        DrugRegistry.registerInfluence(DrugInfluence.class, "default");
+        DrugRegistry.registerInfluence(DrugInfluenceHarmonium.class, "harmonium");
+
+        PSRegistryHandler.load(event, this);
+
+        PSCrafting.initialize();
+        PSAchievementList.init();
+        PSWorldGen.initWorldGen();
+
+        PSConfig.loadConfig(null); // Reload based on new config stuff, like DrugFactories
+        if (config.hasChanged())
+            config.save();
     }
 
-    public static PSConfig getConfig() {
-        return CONFIG.get();
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event)
+    {
+        PSOutboundCommunicationHandler.init();
     }
 
-    public static Identifier id(String name) {
-        return Identifier.of(DEFAULT_NAMESPACE, name);
+    @EventHandler
+    public void serverStarting(FMLServerStartingEvent evt)
+    {
+        evt.registerServerCommand(new CommandDrug());
+        evt.registerServerCommand(new CommandPsyche());
     }
 
-    @Override
-    public void onInitialize() {
-
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> {
-            DrugProperties.of(player).sendCapabilities();
-        });
-        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            DrugProperties.of(newPlayer).copyFrom(DrugProperties.of(oldPlayer), alive);
-        });
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            DrugProperties.of(handler.player).sendCapabilities();
-        });
-        PSBlockEntities.bootstrap();
-        PSBlocks.bootstrap();
-        PSItems.bootstrap();
-        PSTags.bootstrap();
-        PSItemGroups.bootstrap();
-        PSFluids.bootstrap();
-        PSRecipes.bootstrap();
-        PSEntities.bootstrap();
-        PSEffects.bootstrap();
-        PSWorldGen.bootstrap();
-        PSGameRules.bootstrap();
-        PSCommands.bootstrap();
-        PSSounds.bootstrap();
-        PSScreenHandlers.bootstrap();
-        Channel.bootstrap();
-        PSCriteria.bootstrap();
-        PSParticles.bootstrap();
-        PSDamageTypes.bootstrap();
-        VariantMarshal.bootstrap();
+    @EventHandler
+    public void onIMCEvent(FMLInterModComms.IMCEvent event)
+    {
+        // Could be fatal if we don't know the side
+//        for (FMLInterModComms.IMCMessage message : event.getMessages())
+//        {
+//            communicationHandler.onIMCMessage(message, false, false);
+//        }
     }
 }

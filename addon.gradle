@@ -1,0 +1,68 @@
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    filesMatching('mcmod.info') {
+        expand (
+                'modVersion': project.version,
+                'minecraftVersion': project.minecraft.version,
+                'modName': project.name
+        )
+    }
+}
+
+tasks.named('jar', Jar) {
+    manifest {
+        attributes(
+                'FMLCorePlugin': 'ivorius.psychedelicraftcore.PsychedelicraftLoadingPlugin',
+                'FMLCorePluginContainsFMLMod': 'true',
+                'ModSide': 'BOTH',
+                'Specification-Title': project.name,
+                'Specification-Version': '1',
+                'Implementation-Version': project.version
+        )
+    }
+    archiveBaseName = 'Psychedelicraft'
+}
+
+
+tasks.register("copyMods", Copy) {
+    dependsOn tasks.named("extractUserDev") // вместо строки
+    from configurations.provided
+    minecraft.runs.client.workingDirectory.toPath().resolve("mods")
+    mustRunAfter "deobfBinJar"
+    mustRunAfter "repackMinecraft"
+}
+//task copyMods(type: Copy, dependsOn: "extractUserDev") {
+//    from { configurations.provided }
+//    include "**/*.jar"
+//    //into file(minecraft.runDir + "/mods")
+//
+//    into file(minecraft.runs.client.workingDirectory.toPath().resolve("mods").toFile())
+//
+//    mustRunAfter "deobfBinJar"
+//    mustRunAfter "repackMinecraft"
+//}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+//task sourceJar(type: Jar) {
+//    from sourceSets.main.allSource
+//    classifier = 'sources'
+//
+//    manifest {
+//        attributes 'FMLCorePlugin': 'ivorius.psychedelicraftcore.PsychedelicraftLoadingPlugin',
+//                'FMLCorePluginContainsFMLMod': 'true'
+//    }
+//}
+//
+//task deobfJar(type: Jar) {
+//    from sourceSets.main.output
+//    classifier = 'dev'
+//
+//    manifest {
+//        attributes 'FMLCorePlugin': 'ivorius.psychedelicraftcore.PsychedelicraftLoadingPlugin',
+//                'FMLCorePluginContainsFMLMod': 'true'
+//    }
+//}
