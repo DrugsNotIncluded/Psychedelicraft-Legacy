@@ -1,3 +1,4 @@
-.gradle/*
-build/*
-
+/.gradle/
+/build/
+/.idea/*
+.idea/workspace.xml
