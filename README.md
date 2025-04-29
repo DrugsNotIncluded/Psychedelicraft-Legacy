@@ -10,7 +10,4 @@
 
 Requires: [Gradle](https://gradle.org), [Java 17 or 21 JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 * gradle setupDecompWorkspace
-* Depending on your IDE:
-  * IntelliJ idea: Import gradle project, then: gradle genIntellijRuns
-  * Eclipse: gradle eclipse
-* And you're done!
+* gradlew build
