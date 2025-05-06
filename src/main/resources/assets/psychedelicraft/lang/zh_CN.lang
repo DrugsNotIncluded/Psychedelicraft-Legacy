@@ -109,10 +109,10 @@ entity.realityRift.name=零之裂隙
 tile.bed.onDrugs=体内的药物让你无法入眠
 
 # 死亡消息
-death.attack.alcoholPoisoning=%1$s死于酒精中毒
-death.attack.stroke=%1$s突发中风
-death.attack.heartFailure=%1$s心脏骤停
-death.attack.respiratoryFailure=%1$s呼吸衰竭
+death.attack.alcoholPoisoning=%1$s 死于酒精中毒
+death.attack.stroke=%1$s 突发中风
+death.attack.heartFailure=%1$s 心脏骤停
+death.attack.respiratoryFailure=%1$s 呼吸衰竭
 
 # 流体系统
 fluid.psc_slurry=发酵醪
@@ -230,10 +230,10 @@ itemGroup.psycheWeapons=迷幻武器
 # 控制台命令
 commands.psyche.usage=/psyche spawnRift [x] [y] [z]
 commands.drug.usage=/drug <玩家> <药物> <set|lock|unlock> [数值]
-commands.drug.success=%s的%s已设为%s
-commands.drug.success.lock=%s的%s已锁定为%s
-commands.drug.success.unlock=%s的%s已解锁至%s
-commands.drug.nodrug=%s不是已知药物！
+commands.drug.success=%s 的 %s 已设为 %s
+commands.drug.success.lock=%s 的 %s 已锁定为 %s
+commands.drug.success.unlock=%s 的 %s 已解锁至 %s
+commands.drug.nodrug=%s 不是已知药物！
 
 # 配置界面
 psychedelicraft.configgui.title=迷幻工艺配置
