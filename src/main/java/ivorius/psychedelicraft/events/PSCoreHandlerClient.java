@@ -16,7 +16,6 @@ import ivorius.psychedelicraftcore.PsycheCoreBusCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -28,8 +27,8 @@ import org.lwjgl.opengl.GL11;
 public class PSCoreHandlerClient
 {
     // Taken from RenderHelper
-    private final Vec3 field_82884_b = Vec3.createVectorHelper(0.20000000298023224D, 1.0D, -0.699999988079071D).normalize();
-    private final Vec3 field_82885_c = Vec3.createVectorHelper(-0.20000000298023224D, 1.0D, 0.699999988079071D).normalize();
+    private final Vec3 primaryLightDirection = Vec3.createVectorHelper(0.20000000298023224D, 1.0D, -0.699999988079071D).normalize();
+    private final Vec3 secondaryLightDirection = Vec3.createVectorHelper(-0.20000000298023224D, 1.0D, 0.699999988079071D).normalize();
 
     public void register()
     {
@@ -119,8 +118,8 @@ public class PSCoreHandlerClient
             float var2 = 0.0F;
 
             PSRenderStates.setGLLightEnabled(true);
-            PSRenderStates.setGLLight(0, (float) field_82884_b.xCoord, (float) field_82884_b.yCoord, (float) field_82884_b.zCoord, var1, var2);
-            PSRenderStates.setGLLight(1, (float) field_82885_c.xCoord, (float) field_82885_c.yCoord, (float) field_82885_c.zCoord, var1, var2);
+            PSRenderStates.setGLLight(0, (float) primaryLightDirection.xCoord, (float) primaryLightDirection.yCoord, (float) primaryLightDirection.zCoord, var1, var2);
+            PSRenderStates.setGLLight(1, (float) secondaryLightDirection.xCoord, (float) secondaryLightDirection.yCoord, (float) secondaryLightDirection.zCoord, var1, var2);
             PSRenderStates.setGLLightAmbient(var0);
         }
         else

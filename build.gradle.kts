@@ -10,7 +10,7 @@ dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.8.0.202311291450-r")
 }
 
-val NEXT_VERSION = "1.5.3"
+val NEXT_VERSION = "1.5.4"
 version = NEXT_VERSION
 
 fun getGitHash(): String {
